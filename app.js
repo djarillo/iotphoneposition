@@ -26,49 +26,28 @@ var env;
 
 if (process.env.VCAP_SERVICES) {
 	env = JSON.parse(process.env.VCAP_SERVICES);
-
-	if (env["cloudantNoSQLDB"])
-	{
-		db_props = env['cloudantNoSQLDB'][0]['credentials'];
-		// console.log(db_props);
-	}
-	else {
-		console.log('You must bind the Cloudant DB to this application');
-	}
-
-	if (env["iotf-service"])
-	{
-		iot_props = env['iotf-service'][0]['credentials'];
-		// console.log(iot_props);
-	}
-	else
-	{
-		console.log('You must bind the Internet of Things serviºce to this application');
-	}
 } else {
-
     // LOCAL environment
     var fs = require('fs');
     env = JSON.parse(fs.readFileSync('./iotphoneposition_VCAP_Services.json', 'utf8'));
-    // console.log("***Entorno LOCAL ***");
-    if (env["cloudantNoSQLDB"])
-	{
-		db_props = env['cloudantNoSQLDB'][0]['credentials'];
-		// console.log(db_props);
-	}
-	else {
-		console.log('You must bind the Cloudant DB to this application');
-	}
+}
 
-	if (env["iotf-service"])
-	{
-		iot_props = env['iotf-service'][0]['credentials'];
-		// console.log(iot_props);
-	}
-	else
-	{
-		console.log('You must bind the Internet of Things service to this application');
-	}
+if (env["cloudantNoSQLDB"])
+{
+    db_props = env['cloudantNoSQLDB'][0]['credentials'];
+    // console.log(db_props);
+}
+else {
+    console.log('You must bind the Cloudant DB to this application');
+}
+
+if (env["iotf-service"])
+{
+    iot_props = env['iotf-service'][0]['credentials'];
+}
+else
+{
+    console.log('You must bind the Internet of Things serviºce to this application');
 }
 
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
