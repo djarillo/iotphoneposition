@@ -129,11 +129,7 @@
 			onSuccess: onConnectSuccess,
 			onFailure: onConnectFailure,
 			userName: "use-token-auth",
-            //  userName: "a-mpn6q0-lo5u2skh6b",
 			password: password
-            // password: "6Z4ViM8&EB1gnHLp0X"
-
-
 		});
     }
 
