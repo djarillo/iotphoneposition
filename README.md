@@ -1,3 +1,3 @@
-# iot-html5-phone
+# IoTPhonePosition
 
 [![Deploy to Bluemix](https://bluemix.net/deploy/button.png)](https://bluemix.net/deploy?repository=https://github.com/ibm-messaging/iot-html5-phone)
