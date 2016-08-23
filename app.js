@@ -26,12 +26,11 @@ var env;
 
 if (process.env.VCAP_SERVICES) {
 	env = JSON.parse(process.env.VCAP_SERVICES);
-	console.log(env);
 
 	if (env["cloudantNoSQLDB"])
 	{
 		db_props = env['cloudantNoSQLDB'][0]['credentials'];
-		console.log(db_props);
+		// console.log(db_props);
 	}
 	else {
 		console.log('You must bind the Cloudant DB to this application');
@@ -40,7 +39,7 @@ if (process.env.VCAP_SERVICES) {
 	if (env["iotf-service"])
 	{
 		iot_props = env['iotf-service'][0]['credentials'];
-		console.log(iot_props);
+		// console.log(iot_props);
 	}
 	else
 	{
@@ -51,11 +50,11 @@ if (process.env.VCAP_SERVICES) {
     // LOCAL environment
     var fs = require('fs');
     env = JSON.parse(fs.readFileSync('./iotphoneposition_VCAP_Services.json', 'utf8'));
-    console.log("***Entorno LOCAL ***");
+    // console.log("***Entorno LOCAL ***");
     if (env["cloudantNoSQLDB"])
 	{
 		db_props = env['cloudantNoSQLDB'][0]['credentials'];
-		console.log(db_props);
+		// console.log(db_props);
 	}
 	else {
 		console.log('You must bind the Cloudant DB to this application');
@@ -64,7 +63,7 @@ if (process.env.VCAP_SERVICES) {
 	if (env["iotf-service"])
 	{
 		iot_props = env['iotf-service'][0]['credentials'];
-		console.log(iot_props);
+		// console.log(iot_props);
 	}
 	else
 	{
@@ -74,14 +73,12 @@ if (process.env.VCAP_SERVICES) {
 
 var appInfo = JSON.parse(process.env.VCAP_APPLICATION || "{}");
 
-console.log("App Info --> " + appInfo);
-
 var iot_server = iot_props["mqtt_host"];
 var iot_org = iot_props["org"];
 var iot_port = iot_props["mqtt_u_port"];
 var iot_username = "use-token-auth";
 
-var device_type = "iotphoneTEST";
+var device_type = "iotphoneACN";
 
 // all environments
 app.set('port', process.env.PORT || 3001);
@@ -127,9 +124,9 @@ function getUserCredentials(deviceId, callback) {
 			callback({ deviceType: device_type, deviceId: deviceId, token: body.token, org: iot_org });
 		} else {
 			// register with IoT Foundation, return credentials
-            console.log("NOT Found doc: ");
+            console.log("NOT Found doc... Creating DOC");
 			// register device type
-			var typeData = JSON.stringify({id:"iotphoneTEST"});
+			var typeData = JSON.stringify({id:"iotphoneACN"});
 			var typeOpts = {
 				host: iot_props.org + '.internetofthings.ibmcloud.com',
 				port: 443,
@@ -142,16 +139,15 @@ function getUserCredentials(deviceId, callback) {
 			};
 			// var deviceData = JSON.stringify({deviceId:deviceId,authToken:deviceId});
             var deviceData = JSON.stringify({deviceId:deviceId});
-            console.log('**Device DATA -->'+deviceData);
+            // console.log('**Device DATA -->'+deviceData);
 			var deviceOpts = {
 				host: iot_props.org + '.internetofthings.ibmcloud.com',
 				port: 443,
 				method: 'POST',
 				headers: {
 					"content-type" : "application/json"
-                    // "Authorization": "use-auth-token:" + new Buffer('1_ySeGjc6j12p*Rj6Y','base64')
 				},
-				path: 'api/v0002/device/types/iotphoneTEST/devices/',
+				path: 'api/v0002/device/types/iotphoneACN/devices/',
 				auth: iot_props.apiKey + ':' + iot_props.apiToken
 			};
 
@@ -161,19 +157,19 @@ function getUserCredentials(deviceId, callback) {
 					deviceType_res.on('data', function(chunk) {
 						str += chunk;
 					});
-                    console.log("***Chunk "+str);
 					deviceType_res.on('end', function() {
-						// register device
-						var device_req = https.request(deviceOpts, function(device_res) {
+
+				    // register device
+                        var device_req = https.request(deviceOpts, function(device_res) {
 							var str = '';
 							device_res.on('data', function(chunk) {
 								str += chunk;
 							});
-                                console.log("***Chunk 2"+str);
+
 							device_res.on('end', function() {
 								try {
 									var creds = JSON.parse(str);
-                                    console.log("***CREDS ****"+str);
+
 									if (creds.deviceId) {
 										device_credentials.insert({ token: creds.authToken }, creds.deviceId, function(err, body) {
 											if (!err) {
@@ -184,7 +180,7 @@ function getUserCredentials(deviceId, callback) {
 											}
 										});
 									} else {
-                                        console.log("***SIN DeviceID");
+                                        console.log("***NOT DeviceID");
 										callback({ error: err.code });
 									}
 								} catch (e) { console.log(e.stack); callback({ error: 500 }); }
